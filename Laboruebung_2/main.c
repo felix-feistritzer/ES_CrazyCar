@@ -29,10 +29,10 @@ void main(void)
 	        switch (buttonCom.button)
 	        {
 	            case 0:             // START_BUTTON
-	                LCD_BL_ON;
+	                LCD_BL_ON;      //LCD EIN
 	                break;
 	            case 1:             // STOP_BUTTON
-	                LCD_BL_OFF;
+	                LCD_BL_OFF;     //LCD OFF
 	                break;
 	        }
 
