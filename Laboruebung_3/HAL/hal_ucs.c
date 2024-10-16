@@ -1,6 +1,6 @@
 #include "hal_ucs.h"
 
-void HAL_UCS_init(void)
+void HAL_UCS_Init(void)
 {
     UCSCTL6 &= ~XT2OFF;            // XT2 is on
     UCSCTL3 |= SELREF__REFOCLK;    // FFL reference set to REFOCLK

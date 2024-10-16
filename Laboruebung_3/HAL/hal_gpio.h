@@ -65,6 +65,7 @@
 
 #define LCD_BL_ON   (P8OUT |= LCD_BL)
 #define LCD_BL_OFF  (P8OUT &= ~LCD_BL)
+#define LCD_BL_TOGGLE (P8OUT ^= LCD_BL)
 
 // ****************************************
 
