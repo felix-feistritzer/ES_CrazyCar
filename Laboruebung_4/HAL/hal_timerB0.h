@@ -1,5 +1,5 @@
-#define _HAL_TIMERB0_H_
 #ifndef _HAL_TIMERB0_H_
+#define _HAL_TIMERB0_H_
 
 #include <msp430.h>
 
