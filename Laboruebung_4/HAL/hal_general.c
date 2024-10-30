@@ -3,6 +3,7 @@
 #include "hal_wdt.h"
 #include "hal_gpio.h"
 #include "hal_ucs.h"
+#include "hal_timerA0.h"
 #include "hal_timerA1.h"
 #include "hal_timerB0.h"
 
@@ -16,4 +17,5 @@ void HAL_Init(void)
     HAL_UCS_Init();
 //    HAL_TimerB0_Init();
     HAL_TimerA1_Init();
+    HAL_TimerA0_Init();
 }

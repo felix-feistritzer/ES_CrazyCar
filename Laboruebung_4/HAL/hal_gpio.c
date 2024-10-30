@@ -60,6 +60,11 @@ void HAL_GPIO_Init(void)
 
 //***********************************
     // Port 1
+    // RPM_SENSOR
+    P1DIR &= ~RPM_SENSOR;   // Input
+    P1OUT |= RPM_SENSOR;    // Pullup Resistor
+    P1SEL |= RPM_SENSOR;    // TimerA0.2 select
+
     // START_BUTTON
     P1DIR &= ~START_BUTTON; // Input
     P1OUT |= START_BUTTON;  // Pullup Resistor

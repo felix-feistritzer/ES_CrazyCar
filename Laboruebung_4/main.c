@@ -3,6 +3,7 @@
 #include "hal_general.h"
 #include "hal_gpio.h"
 #include "driver_general.h"
+#include "driver_aktorik.h"
 
 extern ButtonCom buttonCom;
 
@@ -21,9 +22,11 @@ void main(void)
 	        {
 	            case 0:             // START_BUTTON
 	                LCD_BL_ON;
+	                Driver_SetThrottle(50);
 	                break;
 	            case 1:             // STOP_BUTTON
 	                LCD_BL_OFF;
+	                Driver_SetThrottle(0);
 	                break;
 	        }
 
