@@ -16,6 +16,11 @@ void main(void)
 	HAL_Init();
 	Driver_Init();
 
+	uint8_t text[5] = {'H', 'e', 'l', 'l', 'o'};
+
+	Driver_LCD_WriteText(text, 5, 1, 49);
+
+
 	while(1 == 1)
 	{
 	    if (buttonCom.active == 1)

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "hal_gpio.h"
 #include "hal_usciB1.h"
+#include "driver_fonttable.h"
 
 // Commands LCD Display
 #define CMD_LCD_RESET       0xE2
@@ -30,5 +31,6 @@ void Driver_LCD_WriteCommand(uint8_t *data, uint8_t len);
 void Driver_LCD_SetPosition(uint8_t page, uint8_t column);
 void Driver_LCD_Init(void);
 void Driver_LCD_Clear(void);
+void Driver_LCD_WriteText (uint8_t *text, uint8_t len, uint8_t page, uint8_t col);
 
 #endif

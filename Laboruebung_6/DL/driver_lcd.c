@@ -22,8 +22,8 @@ void Driver_LCD_WriteCommand(uint8_t *data, uint8_t len)
 
 void Driver_LCD_SetPosition(uint8_t page, uint8_t column)
 {
-    LCD_Pos_Array[0] = page;
-    LCD_Pos_Array[1] = (column >> 4);
+    LCD_Pos_Array[0] = SET_PAGE + page;
+    LCD_Pos_Array[1] = 0x10 + (column >> 4);
     LCD_Pos_Array[2] = column & 0x0F;
 
     Driver_LCD_WriteCommand(LCD_Pos_Array, 3);
@@ -37,12 +37,12 @@ void Driver_LCD_Clear(void)
     uint8_t j;
     for (i = 0; (SET_PAGE + i) <= LAST_PAGE; i++)
     {
-        Driver_LCD_SetPosition(SET_PAGE + i, 0);
+        Driver_LCD_SetPosition(i, 0);
         LCD_DATA;
 
         for (j = 0; j < LCD_MAX_COL; j++)
         {
-            spiCom.TxData.Data[j] = 0xFF;
+            spiCom.TxData.Data[j] = 0x00;
         }
 
         spiCom.TxData.len = LCD_MAX_COL;
@@ -69,9 +69,30 @@ void Driver_LCD_Init(void)
                                 CMD_POWER_CONT,
                                 CMD_DISPLAY_ON};
 
+    spiCom.Status.TxSuc = 1;
+
     Driver_LCD_WriteCommand(LCD_Cmd_Array, 9);
 
-    while (spiCom.Status.TxSuc == 0);
-
     Driver_LCD_Clear();
+}
+
+void Driver_LCD_WriteText (uint8_t *text, uint8_t len, uint8_t page, uint8_t col)
+{
+    uint8_t i;
+    uint8_t j;
+
+    Driver_LCD_SetPosition(page, col);
+
+    for (i = 0; i < len; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            spiCom.TxData.Data[i] = font_table[text[i]][j];
+        }
+    }
+
+    spiCom.TxData.len = len * 6;
+
+    LCD_DATA;
+    HAL_USCIB1_Transmit();
 }
