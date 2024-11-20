@@ -1,4 +1,5 @@
 #include "driver_lcd.h"
+#include "driver_fonttable.h"
 
 extern USCIB1_SPICOM spiCom;
 uint8_t LCD_Pos_Array[3];
@@ -87,7 +88,7 @@ void Driver_LCD_WriteText (uint8_t *text, uint8_t len, uint8_t page, uint8_t col
     {
         for (j = 0; j < 6; j++)
         {
-            spiCom.TxData.Data[i] = font_table[text[i]][j];
+            spiCom.TxData.Data[(i * 6) + j] = font_table[text[i]][j];
         }
     }
 

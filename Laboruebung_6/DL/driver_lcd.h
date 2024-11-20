@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include "hal_gpio.h"
 #include "hal_usciB1.h"
-#include "driver_fonttable.h"
 
 // Commands LCD Display
 #define CMD_LCD_RESET       0xE2

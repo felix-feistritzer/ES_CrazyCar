@@ -5,6 +5,7 @@
 #include "hal_usciB1.h"
 #include "driver_general.h"
 #include "driver_aktorik.h"
+#include "driver_lcd.h"
 
 extern ButtonCom buttonCom;
 extern USCIB1_SPICOM spiCom;
@@ -16,9 +17,8 @@ void main(void)
 	HAL_Init();
 	Driver_Init();
 
-	uint8_t text[5] = {'H', 'e', 'l', 'l', 'o'};
-
-	Driver_LCD_WriteText(text, 5, 1, 49);
+	uint8_t text1[5] = {'H', 'e', 'l', 'l', 'o'};
+	Driver_LCD_WriteText(text1, 5, 1, 49);
 
 
 	while(1 == 1)

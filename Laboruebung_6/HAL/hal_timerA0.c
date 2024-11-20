@@ -1,5 +1,6 @@
 #include "hal_timerA0.h"
 #include "hal_gpio.h"
+#include "driver_lcd.h"
 
 volatile uint16_t rpm_ticks = 0;
 volatile uint16_t rpm_speed = 0;
@@ -46,3 +47,4 @@ __interrupt void TimerA0_1(void)
     rpm_ticks++;
     TA0CCTL2 &= ~CCIFG;     // clear interrupt flag
 }
+
