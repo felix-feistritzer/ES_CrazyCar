@@ -102,3 +102,31 @@ void Driver_LCD_WriteText (uint8_t *text, uint8_t len, uint8_t page, uint8_t col
     LCD_DATA;
     HAL_USCIB1_Transmit();
 }
+
+void Driver_LCD_DrawBar(uint16_t value, uint16_t maxValue, uint8_t width, uint8_t page, uint8_t startCol)
+{
+    uint16_t stepSize = maxValue / width;
+    uint8_t stepNumber = value / stepSize;
+    uint8_t i;
+
+    while(spiCom.Status.TxSuc == 0);
+
+    Driver_LCD_SetPosition(page, startCol);
+
+    while(spiCom.Status.TxSuc == 0);
+
+    spiCom.TxData.Data[0] = 0xFF;
+
+    for (i = 0; i < width; i++)
+    {
+        if (i < stepNumber) spiCom.TxData.Data[i + 1] = 0x7E;
+        else spiCom.TxData.Data[i] = 0x00;
+    }
+
+    spiCom.TxData.Data[width] = 0xFF;
+
+    spiCom.TxData.len = width + 2;
+
+    LCD_DATA;
+    HAL_USCIB1_Transmit();
+}

@@ -37,7 +37,7 @@ __interrupt void TimerA0_0(void)
 {
     rpm_speed = (rpm_ticks * 5) * 10; // (Ticks * 5mm) * 10Hz
     rpm_speed = (rpm_speed + rpm_speed_old) >> 1;
-    rpm_speed = rpm_speed_old;
+    rpm_speed_old = rpm_speed;
     rpm_ticks = 0;
 }
 

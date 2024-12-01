@@ -31,5 +31,6 @@ void Driver_LCD_SetPosition(uint8_t page, uint8_t column);
 void Driver_LCD_Init(void);
 void Driver_LCD_Clear(void);
 void Driver_LCD_WriteText (uint8_t *text, uint8_t len, uint8_t page, uint8_t col);
+void Driver_LCD_DrawBar(uint16_t value, uint16_t maxValue, uint8_t width, uint8_t page, uint8_t startCol);
 
 #endif
