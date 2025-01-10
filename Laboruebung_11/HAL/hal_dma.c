@@ -14,7 +14,7 @@ void HAL_DMA_Init(void)
     DMACTL0 |= DMA0TSEL_24;             // Use Interrupt-Flag of ADC12
     DMA0SA = &ADC12MEM0;                // Source address = ADC12 Memory Register
     DMA0DA = &adcCom.ADCBuffer;         // Destination address = Buffer of ADC
-    DMA0SZ = 5;                         // 5 words to transfer
+    DMA0SZ = 4;                         // 4 words to transfer
 
     DMA0CTL |= DMAEN;                   // Enable DMA
 }

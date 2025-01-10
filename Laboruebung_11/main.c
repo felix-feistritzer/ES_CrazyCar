@@ -62,34 +62,20 @@ void main(void)
 	        Driver_LCD_DrawBar(rpm_speed, 5000, 60, 7, 36);
 	    }
 
-	    /*
-        uint8_t i;
-
 	    if (buttonCom.active == 1)
         {
             switch (buttonCom.button)
             {
-                case 0:
-                    for (i = 0; i < 4; i++)
-                    {
-                        IntToASCII(text, adcCom.ADCBuffer[i]);
-                        Driver_LCD_WriteText(text, 4, i + 3, 102);
-                        Driver_LCD_DrawBar(adcCom.ADCBuffer[i], 4095, 60, i + 3, 36);
-                    }
-
-                    adcCom.Status.B.ADCrdy = 0;
-
-                    IntToASCII(text, rpm_speed);
-                    Driver_LCD_WriteText(text, 4, 7, 102);
-                    Driver_LCD_DrawBar(rpm_speed, 5000, 60, 7, 36);
+                case 0: // Start CrazyCar
+                    Driver_SetThrottle(100);
                     break;
-                default:
+                case 1: // Stop CrazyCar
+                    Driver_SetThrottle(0);
                     break;
             }
 
             buttonCom.active = 0;   // Clear Flag
         }
-        */
 	}
 }
 
