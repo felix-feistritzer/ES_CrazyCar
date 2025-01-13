@@ -14,9 +14,9 @@
 #define THROTTLE_MINFPW     0x1D4C  // 7500 // 3000us
 #define THROTTLE_MAXFPW     0x2710  // 10000 // 4000us
 
-void Driver_SetSteering(int8_t value);
+void Driver_SetSteering(int16_t value);
 void Driver_SteeringInit(void);
-void Driver_SetThrottle(int8_t value);
+void Driver_SetThrottle(int16_t value);
 void Driver_ThrottleInit(void);
 void pwmCycles(uint16_t pwm, uint16_t cycles);
 

@@ -5,7 +5,7 @@ extern volatile uint32_t counter_A1_CCR0;
 
 // Steering ******************************
 
-void Driver_SetSteering(int8_t value)
+void Driver_SetSteering(int16_t value)
 {
     // value == -100 => 100% left
     // value == 0    => centered
@@ -24,7 +24,7 @@ void Driver_SteeringInit(void)
 
 // Throttle ******************************
 
-void Driver_SetThrottle(int8_t value)
+void Driver_SetThrottle(int16_t value)
 {
     // value == -100 => Max RPW
     // value == 0    => Max Break

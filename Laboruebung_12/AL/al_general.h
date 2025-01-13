@@ -4,7 +4,9 @@
 typedef enum State
 {
     Data,
-    Drive,
+    Start,
+    CCW,
+    CW,
     Stop
 }State_t;
 

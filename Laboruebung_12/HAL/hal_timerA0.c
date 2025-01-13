@@ -6,6 +6,8 @@ volatile uint16_t rpm_ticks = 0;
 volatile uint16_t rpm_speed = 0;
 volatile uint16_t rpm_speed_old = 0;
 
+volatile uint16_t ticks_cnt = 0;
+
 void HAL_TimerA0_Init(void)
 {
     TA0CTL |= TACLR;            // Timer_A clear
@@ -47,6 +49,7 @@ __interrupt void TimerA0_0(void)
 __interrupt void TimerA0_1(void)
 {
     rpm_ticks++;
+    ticks_cnt++;
     TA0CCTL2 &= ~CCIFG;     // clear interrupt flag
 }
 

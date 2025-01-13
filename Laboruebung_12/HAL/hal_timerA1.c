@@ -45,11 +45,12 @@ void HAL_TimerA1_Init(void)
 #pragma vector = TIMER1_A0_VECTOR
 __interrupt void TimerA1(void)
 {
-    counter_A1_CCR0++;
-
-    if (CCState == Drive && counter_A1_CCR0 > 20)
+    if (CCState == Start || CCState == CCW || CCState == CW)
     {
-        counter_A1_CCR0 = 0;
         AL_Algorithm();
+    }
+    else
+    {
+        counter_A1_CCR0++;
     }
 }
