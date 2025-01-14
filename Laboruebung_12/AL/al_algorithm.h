@@ -27,9 +27,7 @@ typedef enum DriveState
     T7,
     S8,
     T8,
-    S1,
-    RECOVERY_INIT,
-    RECOVERY
+    S1
 } DriveState_t;
 
 void AL_Algorithm(void);
