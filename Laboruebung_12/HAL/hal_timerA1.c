@@ -1,9 +1,5 @@
 #include "hal_timerA1.h"
 #include "hal_gpio.h"
-#include "al_general.h"
-#include "al_algorithm.h"
-
-extern State_t CCState;
 
 void HAL_TimerA1_Init(void)
 {
@@ -45,12 +41,5 @@ void HAL_TimerA1_Init(void)
 #pragma vector = TIMER1_A0_VECTOR
 __interrupt void TimerA1(void)
 {
-    if (CCState == Start || CCState == CCW || CCState == CW)
-    {
-        AL_Algorithm();
-    }
-    else
-    {
-        counter_A1_CCR0++;
-    }
+    counter_A1_CCR0++;
 }

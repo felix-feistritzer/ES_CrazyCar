@@ -5,6 +5,7 @@
 #include "hal_ucs.h"
 #include "hal_timerA0.h"
 #include "hal_timerA1.h"
+#include "hal_timerA2.h"
 #include "hal_timerB0.h"
 #include "hal_usciB1.h"
 #include "hal_adc12.h"
@@ -23,6 +24,7 @@ void HAL_Init(void)
     HAL_TimerB0_Init();
     HAL_TimerA1_Init();
     HAL_TimerA0_Init();
+    HAL_TimerA2_Init();
     HAL_USCIB1_Init();
     HAL_ADC12_Init();
     HAL_DMA_Init();

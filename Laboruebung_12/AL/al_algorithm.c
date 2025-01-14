@@ -23,6 +23,7 @@ const uint8_t time_delta_inv = 60;
 void AL_Algorithm(void)
 {
     distance = ticks_cnt * 5; // Distance in mm
+
     sen_diff_old = sen_diff;
     sen_diff = Driver_GetRightDist() - Driver_GetLeftDist();
     sen_diff_delta = sen_diff - sen_diff_old;
@@ -246,3 +247,5 @@ void AL_Recovery(void)
 {
     Driver_SetThrottle(-40);
 }
+
+

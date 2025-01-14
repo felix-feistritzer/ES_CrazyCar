@@ -4,20 +4,20 @@
 #include "hal_general.h"
 #include "hal_gpio.h"
 #include "hal_usciB1.h"
+#include "hal_adc12.h"
+#include "hal_timerA2.h"
 #include "driver_general.h"
 #include "driver_aktorik.h"
 #include "driver_lcd.h"
-#include "hal_adc12.h"
 #include "driver_sensor.h"
 #include "al_general.h"
+#include "al_data.h"
+#include "al_algorithm.h"
 
 extern ButtonCom     buttonCom;
-extern USCIB1_SPICOM spiCom;
 extern ADC12Com      adcCom;
-extern uint16_t      rpm_speed;
 extern State_t       CCState;
-
-void IntToASCII(uint8_t *text, uint16_t value);
+extern uint8_t       A2_Flag;
 
 void main(void)
 {
@@ -25,78 +25,49 @@ void main(void)
 	
 	HAL_Init();
 	Driver_Init();
+	AL_Init();
 
-	Driver_LCD_Clear();
-
-	Driver_LCD_WriteString("Data ADC", 1, 40);
-	Driver_LCD_WriteString("[Rght]", 3, 0);
-	Driver_LCD_WriteString("[Left]", 4, 0);
-	Driver_LCD_WriteString("[Frnt]", 5, 0);
-	Driver_LCD_WriteString("[Diff]", 6, 0);
-	Driver_LCD_WriteString("[mm/s]", 7, 0);
-
-	uint8_t text[8];
-	CCState = Data;
+	AL_Data_Init();
 
 	while(1 == 1)
 	{
-	    if (adcCom.Status.B.ADCrdy == 1 && CCState == Data)
-	    {
-	        uint16_t rightDist = Driver_GetRightDist();
-	        uint16_t leftDist  = Driver_GetLeftDist();
-	        uint16_t frontDist = Driver_GetFrontDist();
-	        int16_t sen_diff = Driver_GetRightDist() - Driver_GetLeftDist();
-
-	        IntToASCII(text, rightDist);
-	        Driver_LCD_WriteText(text, 4, 3, 102);
-	        Driver_LCD_DrawBar(rightDist, 800, 60, 3, 36);
-
-	        IntToASCII(text, leftDist);
-            Driver_LCD_WriteText(text, 4, 4, 102);
-            Driver_LCD_DrawBar(leftDist, 800, 60, 4, 36);
-
-            IntToASCII(text, frontDist);
-            Driver_LCD_WriteText(text, 4, 5, 102);
-            Driver_LCD_DrawBar(frontDist, 1500, 60, 5, 36);
-
-            IntToASCII(text, sen_diff < 0 ? -sen_diff : sen_diff);
-            Driver_LCD_WriteText(text, 4, 6, 102);
-            Driver_LCD_DrawBar(sen_diff < 0 ? -sen_diff : sen_diff, 800, 60, 6, 36);
-
-	        adcCom.Status.B.ADCrdy = 0;
-
-	        IntToASCII(text, rpm_speed);
-	        Driver_LCD_WriteText(text, 4, 7, 102);
-	        Driver_LCD_DrawBar(rpm_speed, 5000, 60, 7, 36);
-	    }
-
 	    if (buttonCom.active == 1)
-        {
-            switch (buttonCom.button)
             {
-                case 0: // Start CrazyCar
-                    CCState = Start;
-                    AL_Init();
-                    break;
-                case 1: // Stop CrazyCar
-                    Driver_SetThrottle(0);
-                    CCState = Stop;
-                    Driver_LCD_Clear();
-                    Driver_LCD_WriteString("Stop", 1, 40);
-                    break;
+                switch (buttonCom.button)
+                {
+                    case 0:                 // Start CrazyCar
+                        CCState = CCW;
+                        AL_CCW();
+                        break;
+                    case 1:                 // Stop CrazyCar
+                        Driver_SetThrottle(0);
+                        CCState = Stop;
+                        AL_Stop();
+                        break;
+                }
+
+                buttonCom.active = 0;       // Clear Flag
             }
 
-            buttonCom.active = 0;   // Clear Flag
-        }
+	    switch (CCState)
+	    {
+	        case Data:
+	            if (adcCom.Status.B.ADCrdy == 1)
+	            {
+	                AL_Data();
+	            }
+	            break;
+	        case CCW:
+	            if (A2_Flag == 1)
+	            {
+	                AL_Algorithm();
+	                A2_Flag = 0;
+	            }
+	            break;
+	        case Stop:
+	            AL_Data_Init();
+	            CCState = Data;
+	            break;
+	    }
 	}
-}
-
-void IntToASCII(uint8_t *text, uint16_t value)
-{
-    uint8_t i;
-    for (i = 4; i > 0; --i)
-    {
-        text[i - 1] = (value % 10) + 48;
-        value = value / 10;
-    }
 }

@@ -4,12 +4,13 @@
 typedef enum State
 {
     Data,
-    Start,
     CCW,
     CW,
     Stop
 }State_t;
 
 void AL_Init(void);
+void AL_CCW(void);
+void AL_Stop(void);
 
 #endif

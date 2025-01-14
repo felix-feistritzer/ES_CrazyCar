@@ -146,3 +146,13 @@ void Driver_LCD_WriteString(uint8_t *text, uint8_t page, uint8_t col)
 
     Driver_LCD_WriteText(text, length, page, col);
 }
+
+void Driver_LCD_IntToASCII(uint8_t *text, uint16_t value)
+{
+    uint8_t i;
+    for (i = 4; i > 0; --i)
+    {
+        text[i - 1] = (value % 10) + 48;
+        value = value / 10;
+    }
+}

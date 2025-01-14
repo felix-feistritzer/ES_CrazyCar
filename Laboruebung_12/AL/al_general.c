@@ -1,19 +1,31 @@
 #include "al_general.h"
 #include "driver_lcd.h"
 #include "al_algorithm.h"
+#include "hal_timerA2.h"
 
-State_t CCState;
+volatile State_t CCState;
 extern DriveState_t DState;
 
 void AL_Init(void)
 {
     Driver_LCD_Clear();
-    Driver_LCD_WriteString("Driving...", 1, 40);
+    CCState = Data;
+}
+
+void AL_CCW(void)
+{
+    Driver_LCD_Clear();
+    Driver_LCD_WriteString("Driving...", 3, 28);
+
+    HAL_TimerA2_Start();
 
     DState = INIT;
+}
 
-    TA1CCTL0 |= CCIE;   // Timer_A1: CCR0 Capture/Compare interrupt enable
+void AL_Stop()
+{
+    HAL_TimerA2_Stop();
 
-
-    // TA1CCTL0 &= ~CCIE;  // Timer_A1: CCR0 Capture/Compare interrupt disable
+    Driver_LCD_Clear();
+    // Driver_LCD_WriteString("Stop", 3, 40);
 }
