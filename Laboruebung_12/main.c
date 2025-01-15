@@ -13,6 +13,7 @@
 #include "al_general.h"
 #include "al_data.h"
 #include "al_algorithm.h"
+#include "al_test.h"
 
 extern ButtonCom     buttonCom;
 extern ADC12Com      adcCom;
@@ -36,12 +37,10 @@ void main(void)
                 switch (buttonCom.button)
                 {
                     case 0:                 // Start CrazyCar
-                        CCState = CCW;
                         AL_CCW();
+                        // AL_Test();
                         break;
                     case 1:                 // Stop CrazyCar
-                        Driver_SetThrottle(0);
-                        CCState = Stop;
                         AL_Stop();
                         break;
                 }
@@ -67,6 +66,13 @@ void main(void)
 	        case Stop:
 	            AL_Data_Init();
 	            CCState = Data;
+	            break;
+	        case Test:
+	            if (A2_Flag == 1)
+                {
+                    AL_Algorithm_Test();
+                    A2_Flag = 0;
+                }
 	            break;
 	    }
 	}

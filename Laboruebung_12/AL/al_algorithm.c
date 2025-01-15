@@ -1,7 +1,7 @@
 #include "al_algorithm.h"
 #include "driver_aktorik.h"
-#include "hal_adc12.h"
 #include "driver_sensor.h"
+#include "hal_adc12.h"
 #include "hal_timerA0.h"
 
 extern ADC12Com adcCom;
