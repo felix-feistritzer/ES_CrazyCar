@@ -19,8 +19,21 @@ void AL_CCW(void)
 {
     Driver_LCD_Clear();
     Driver_LCD_WriteString("Driving...", 3, 28);
+    Driver_LCD_WriteString("[CCW]", 5, 52);
 
     CCState = CCW;
+    DState = INIT;
+
+    HAL_TimerA2_Start();
+}
+
+void AL_CW(void)
+{
+    Driver_LCD_Clear();
+    Driver_LCD_WriteString("Driving...", 3, 28);
+    Driver_LCD_WriteString("[CW]", 5, 52);
+
+    CCState = CW;
     DState = INIT;
 
     HAL_TimerA2_Start();

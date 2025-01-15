@@ -15,6 +15,12 @@
 #include "al_algorithm.h"
 #include "al_test.h"
 
+#define DIR_CCW     0
+#define DIR_CW      1
+#define DIR_TEST    2
+
+const uint8_t Direction = DIR_CW;
+
 extern ButtonCom     buttonCom;
 extern ADC12Com      adcCom;
 extern State_t       CCState;
@@ -33,20 +39,30 @@ void main(void)
 	while(1 == 1)
 	{
 	    if (buttonCom.active == 1)
+        {
+            switch (buttonCom.button)
             {
-                switch (buttonCom.button)
-                {
-                    case 0:                 // Start CrazyCar
-                        AL_CCW();
-                        // AL_Test();
-                        break;
-                    case 1:                 // Stop CrazyCar
-                        AL_Stop();
-                        break;
-                }
-
-                buttonCom.active = 0;       // Clear Flag
+                case 0:                 // Start CrazyCar
+                    switch (Direction)
+                    {
+                        case DIR_CCW:
+                            AL_CCW();
+                            break;
+                        case DIR_CW:
+                            AL_CW();
+                            break;
+                        case DIR_TEST:
+                            AL_Test();
+                            break;
+                    }
+                    break;
+                case 1:                 // Stop CrazyCar
+                    AL_Stop();
+                    break;
             }
+
+            buttonCom.active = 0;       // Clear Flag
+        }
 
 	    switch (CCState)
 	    {
@@ -59,10 +75,17 @@ void main(void)
 	        case CCW:
 	            if (A2_Flag == 1)
 	            {
-	                AL_Algorithm();
+	                AL_Algorithm_CCW();
 	                A2_Flag = 0;
 	            }
 	            break;
+	        case CW:
+	            if (A2_Flag == 1)
+                {
+                    AL_Algorithm_CW();
+                    A2_Flag = 0;
+                }
+                break;
 	        case Stop:
 	            AL_Data_Init();
 	            CCState = Data;

@@ -12,6 +12,7 @@ typedef enum State
 
 void AL_Init(void);
 void AL_CCW(void);
+void AL_CW(void);
 void AL_Stop(void);
 void AL_Test(void);
 

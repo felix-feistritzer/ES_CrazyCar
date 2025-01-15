@@ -4,12 +4,33 @@
 #include "hal_adc12.h"
 #include "hal_timerA0.h"
 
+#define DIR_CCW     0
+#define DIR_CW      1
+#define DIR_TEST    2
+
+extern uint8_t Direction;
+
 extern ADC12Com adcCom;
 extern uint16_t rpm_speed;
 
 void AL_Data_Init(void)
 {
     Driver_LCD_Clear();
+
+    Driver_LCD_WriteString("Dir: ", 0, 0);
+
+    switch (Direction)
+    {
+        case DIR_CCW:
+            Driver_LCD_WriteString("CCW", 0, 30);
+            break;
+        case DIR_CW:
+            Driver_LCD_WriteString("CW", 0, 30);
+            break;
+        case DIR_TEST:
+            Driver_LCD_WriteString("Test", 0, 30);
+            break;
+    }
 
     Driver_LCD_WriteString("Data ADC", 1, 40);
     Driver_LCD_WriteString("[Rght]", 3, 0);

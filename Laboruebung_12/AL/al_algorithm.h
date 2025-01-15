@@ -30,8 +30,10 @@ typedef enum DriveState
     S1
 } DriveState_t;
 
-void AL_Algorithm(void);
+void AL_Algorithm_CCW(void);
+void AL_Algorithm_CW(void);
 int16_t AL_Regler(void);
+int16_t AL_Regler_left(uint16_t right_dist);
 void AL_Recovery(void);
 
 #endif
