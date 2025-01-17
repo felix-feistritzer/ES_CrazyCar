@@ -300,6 +300,47 @@ void AL_Algorithm_CW(void)
     sen_diff_delta = sen_diff - sen_diff_old;
 
 
+    if (DState == INIT)
+    {
+        stuck_cnt = 0;
+        recovery = 0;
+        recovery_distance = 0;
+    }
+
+    if (Driver_GetFrontDist() < 100)
+    {
+        stuck_cnt++;
+    }
+    else
+    {
+        stuck_cnt = 0;
+    }
+
+    if (stuck_cnt > 30)
+    {
+        recovery = 1;
+        stuck_ticks = ticks_cnt;
+        stuck_cnt = 0;
+    }
+
+    if (recovery == 1)
+    {
+        recovery_distance = (ticks_cnt - stuck_ticks) * 5;
+        if (recovery_distance < 300)
+        {
+            Driver_SetThrottle(-40);
+            Driver_SetSteering(0);
+
+            return;
+        }
+        else
+        {
+            recovery_distance = 0;
+            recovery = 0;
+            ticks_cnt = ticks_cnt - stuck_ticks;
+        }
+    }
+
     switch (DState)
     {
         case INIT:

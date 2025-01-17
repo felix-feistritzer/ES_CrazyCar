@@ -19,7 +19,7 @@
 #define DIR_CW      1
 #define DIR_TEST    2
 
-const uint8_t Direction = DIR_CW;
+const uint8_t Direction = DIR_TEST;
 
 extern ButtonCom     buttonCom;
 extern ADC12Com      adcCom;
