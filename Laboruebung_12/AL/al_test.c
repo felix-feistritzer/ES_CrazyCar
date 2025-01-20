@@ -22,11 +22,12 @@ extern const float kd;
 
 extern const uint8_t time_delta_inv;
 
-uint8_t text[8];
-float throttle_integral;
+//uint8_t text[8];
+//float throttle_integral;
 
 void AL_Algorithm_Test(void)
 {
+    /*
     distance = ticks_cnt * 5; // Distance in mm
 
     sen_diff_old = sen_diff;
@@ -44,25 +45,22 @@ void AL_Algorithm_Test(void)
             Driver_LCD_WriteString("[mm/s]", 7, 0);
             break;
         case START_T:
-            if (distance < 1000)
+            if (Driver_GetFrontDist() < 1400)
             {
                 AL_SetSpeed(1000);
-            }
-            else if (distance < 4000)
-            {
-                AL_SetSpeed(4000);
             }
             else
             {
-                AL_SetSpeed(1000);
+                AL_SetSpeed(3000);
             }
+
             Driver_SetSteering(AL_Regler());
 
             Driver_LCD_IntToASCII(text, rpm_speed);
             Driver_LCD_WriteText(text, 4, 7, 102);
             Driver_LCD_DrawBar(rpm_speed, 5000, 60, 7, 36);
 
-            if (Driver_GetFrontDist() < 200)
+            if (Driver_GetFrontDist() < 100)
             {
                 DState_Test = STOP_T;
                 ticks_cnt = 0;
@@ -72,8 +70,10 @@ void AL_Algorithm_Test(void)
             Driver_SetThrottle(0);
             break;
     }
+    */
 }
 
+/*
 void AL_SetSpeed(int16_t target_speed)
 {
     int16_t error = target_speed - rpm_speed;
@@ -88,7 +88,7 @@ void AL_SetSpeed(int16_t target_speed)
         float error_integral = error * 0.0167;
         throttle_integral = throttle_integral + error_integral;
 
-        throttle = error * 0.2 + throttle_integral * 0.05;
+        throttle = error * 0.2 + throttle_integral * 0.02;// 0.05;
 
         if (throttle > 100)
         {
@@ -109,6 +109,7 @@ void AL_SetSpeed(int16_t target_speed)
     Driver_LCD_DrawBar(throttle, 100, 60, 6, 36);
 
 }
+*/
 
 void AL_Break(int16_t target_speed)
 {

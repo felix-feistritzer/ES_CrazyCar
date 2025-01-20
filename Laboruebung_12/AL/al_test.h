@@ -15,7 +15,7 @@ typedef enum DriveState_Test
 } DriveState_Test_t;
 
 void AL_Algorithm_Test(void);
-void AL_SetSpeed(int16_t target_speed);
+//void AL_SetSpeed(int16_t target_speed);
 void AL_Break(int16_t target_speed);
 
 #endif

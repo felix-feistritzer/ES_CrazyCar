@@ -15,6 +15,8 @@ int16_t sen_diff_old;
 int16_t sen_diff;
 int16_t sen_diff_delta;
 
+float motor_throttle_integral;
+
 uint8_t stuck_cnt;
 uint8_t recovery;
 uint16_t recovery_distance;
@@ -86,18 +88,14 @@ void AL_Algorithm_CCW(void)
             DState = START;
             break;
         case START:
-            Driver_SetThrottle(70);
             Driver_SetSteering(AL_Regler());
             if (Driver_GetFrontDist() < 1400)
             {
-                if (rpm_speed > 2000)
-                {
-                    Driver_SetThrottle(-50);
-                }
-                else
-                {
-                    Driver_SetThrottle(40);
-                }
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(3000);
             }
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
             {
@@ -106,8 +104,8 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T1:
-            Driver_SetThrottle(40);
-            Driver_SetSteering(-100);
+            AL_SetSpeed(1300);
+            Driver_SetSteering(-50);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S2;
@@ -115,7 +113,14 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case S2:
-            Driver_SetThrottle(50);
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
             {
@@ -124,8 +129,8 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T2:
-            Driver_SetThrottle(40);
-            Driver_SetSteering(-80);
+            AL_SetSpeed(1300);
+            Driver_SetSteering(-70);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S3;
@@ -133,7 +138,14 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case S3:
-            Driver_SetThrottle(50);
+            if (distance > 1600)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && distance > 1600)
             {
@@ -142,7 +154,7 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T3:
-            Driver_SetThrottle(40);
+            AL_SetSpeed(1000);
             Driver_SetSteering(-100);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1400 && distance > 500)
             {
@@ -151,7 +163,14 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case S4:
-            Driver_SetThrottle(50);
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 800)
             {
@@ -160,7 +179,7 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T4:
-            Driver_SetThrottle(40);
+            AL_SetSpeed(1100);
             Driver_SetSteering(100);
             if (Driver_GetRightDist() < 750 && Driver_GetFrontDist() > 1400 && distance > 500)
             {
@@ -171,18 +190,11 @@ void AL_Algorithm_CCW(void)
         case S5:
             if (distance < 1800)
             {
-                Driver_SetThrottle(60);
+                AL_SetSpeed(3000);
             }
             else
             {
-                if (rpm_speed > 1800)
-                {
-                    Driver_SetThrottle(-30);
-                }
-                else
-                {
-                    Driver_SetThrottle(40);
-                }
+                AL_SetSpeed(1300);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetRightDist() > 750 && distance > 2000)
@@ -192,7 +204,7 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T5:
-            Driver_SetThrottle(40);
+            AL_SetSpeed(1400);
             Driver_SetSteering(100);
             if (Driver_GetRightDist() < 600 && distance > 150)
             {
@@ -201,8 +213,15 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case S6:
-            Driver_SetThrottle(60);
-            Driver_SetSteering(AL_Regler());
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
+            Driver_SetSteering(AL_Regler_right(350));
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 750 && distance > 400)
             {
                 DState = T6;
@@ -210,8 +229,8 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T6:
-            Driver_SetThrottle(40);
-            Driver_SetSteering(-100);
+            AL_SetSpeed(1100);
+            Driver_SetSteering(-70);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1400 && distance > 150)
             {
                 DState = S7;
@@ -219,7 +238,14 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case S7:
-            Driver_SetThrottle(50);
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 800 && distance > 500)
             {
@@ -228,7 +254,7 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T7:
-            Driver_SetThrottle(40);
+            AL_SetSpeed(1200);
             Driver_SetSteering(-80);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1400 && distance > 150)
             {
@@ -237,7 +263,14 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case S8:
-            Driver_SetThrottle(50);
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 800 && distance > 1000)
             {
@@ -246,8 +279,8 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case T8:
-            Driver_SetThrottle(40);
-            Driver_SetSteering(-70);
+            AL_SetSpeed(1300);
+            Driver_SetSteering(-80);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1400 && distance > 150)
             {
                 DState = S1;
@@ -255,30 +288,15 @@ void AL_Algorithm_CCW(void)
             }
             break;
         case S1:
-            if (distance < 1000)
+            if (Driver_GetFrontDist() < 1400)
             {
-                Driver_SetThrottle(60);
-            }
-            else if (distance < 3000)
-            {
-                Driver_SetThrottle(90);
+                AL_SetSpeed(1000);
             }
             else
             {
-                Driver_SetThrottle(40);
+                AL_SetSpeed(4000);
             }
             Driver_SetSteering(AL_Regler());
-            if (Driver_GetFrontDist() < 1400)
-            {
-                if (rpm_speed > 2000)
-                {
-                    Driver_SetThrottle(-50);
-                }
-                else
-                {
-                    Driver_SetThrottle(40);
-                }
-            }
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 4800)
             {
                 DState = T1;
@@ -348,8 +366,18 @@ void AL_Algorithm_CW(void)
             DState = START;
             break;
         case START:
-            Driver_SetThrottle(70);
+            //Driver_SetThrottle(70);
             Driver_SetSteering(AL_Regler());
+
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(4000);
+            }
+            /*
             if (Driver_GetFrontDist() < 1400)
             {
                 if (rpm_speed > 1800)
@@ -361,6 +389,7 @@ void AL_Algorithm_CW(void)
                     Driver_SetThrottle(40);
                 }
             }
+            */
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
             {
                 DState = T1;
@@ -368,8 +397,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T1:
-            Driver_SetThrottle(40);
+            //Driver_SetThrottle(40);
             Driver_SetSteering(100);
+            AL_SetSpeed(1300);
             if (Driver_GetRightDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S2;
@@ -377,8 +407,16 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S2:
-            Driver_SetThrottle(50);
+            //Driver_SetThrottle(50);
             Driver_SetSteering(AL_Regler());
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
             {
                 DState = T2;
@@ -386,8 +424,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T2:
-            Driver_SetThrottle(40);
+            //Driver_SetThrottle(40);
             Driver_SetSteering(80);
+            AL_SetSpeed(1300);
             if (Driver_GetRightDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S3;
@@ -395,8 +434,16 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S3:
-            Driver_SetThrottle(50);
+            //Driver_SetThrottle(50);
             Driver_SetSteering(AL_Regler());
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 500)
             {
                 DState = T3;
@@ -404,8 +451,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T3:
-            Driver_SetThrottle(40);
+            //Driver_SetThrottle(40);
             Driver_SetSteering(80);
+            AL_SetSpeed(1300);
             if (Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S4;
@@ -413,9 +461,16 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S4:
-            Driver_SetThrottle(50);
+            //Driver_SetThrottle(50);
             Driver_SetSteering(AL_Regler_left(350));
-
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(2000);
+            }
+            else
+            {
+                AL_SetSpeed(1000);
+            }
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 100)
             {
                 DState = T4;
@@ -423,8 +478,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T4:
-            Driver_SetThrottle(50);
+            //Driver_SetThrottle(50);
             Driver_SetSteering(-60);
+            AL_SetSpeed(1200);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S5;
@@ -432,6 +488,7 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S5:
+            /*
             if (Driver_GetFrontDist() < 1400)
             {
                 if (rpm_speed > 1600)
@@ -447,7 +504,16 @@ void AL_Algorithm_CW(void)
             {
                 Driver_SetThrottle(60);
             }
+            */
             Driver_SetSteering(AL_Regler());
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 2000)
             {
                 DState = T5;
@@ -455,8 +521,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T5:
-            Driver_SetThrottle(40);
+            //Driver_SetThrottle(40);
             Driver_SetSteering(-100);
+            AL_SetSpeed(1100);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1400 && distance > 500)
             {
                 DState = S6;
@@ -464,8 +531,16 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S6:
-            Driver_SetThrottle(50);
+            //Driver_SetThrottle(50);
             Driver_SetSteering(AL_Regler());
+            if (distance > 900)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             if (Driver_GetRightDist() > 750 && distance > 800)
             {
                 DState = T6;
@@ -473,8 +548,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T6:
-            Driver_SetThrottle(40);
+            //Driver_SetThrottle(40);
             Driver_SetSteering(100);
+            AL_SetSpeed(1200);
             if (Driver_GetRightDist() < 750 && Driver_GetFrontDist() > 1400 && distance > 500)
             {
                 DState = S7;
@@ -482,6 +558,7 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S7:
+            /*
             if (Driver_GetFrontDist() < 1400)
             {
                 if (rpm_speed > 1600)
@@ -496,6 +573,14 @@ void AL_Algorithm_CW(void)
             else
             {
                 Driver_SetThrottle(60);
+            }*/
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1600)
@@ -505,8 +590,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T7:
-            Driver_SetThrottle(40);
+            //Driver_SetThrottle(40);
             Driver_SetSteering(100);
+            AL_SetSpeed(1300);
             if (Driver_GetRightDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S8;
@@ -514,8 +600,16 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S8:
-            Driver_SetThrottle(50);
+            //Driver_SetThrottle(50);
             Driver_SetSteering(AL_Regler());
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(2000);
+            }
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
             {
                 DState = T8;
@@ -523,8 +617,9 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T8:
-            Driver_SetThrottle(40);
+            //Driver_SetThrottle(40);
             Driver_SetSteering(100);
+            AL_SetSpeed(1300);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S1;
@@ -532,6 +627,7 @@ void AL_Algorithm_CW(void)
             }
             break;
         case S1:
+            /*
             if (distance < 1000)
             {
                 Driver_SetThrottle(60);
@@ -544,7 +640,17 @@ void AL_Algorithm_CW(void)
             {
                 Driver_SetThrottle(40);
             }
+            */
             Driver_SetSteering(AL_Regler());
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                AL_SetSpeed(4000);
+            }
+            /*
             if (Driver_GetFrontDist() < 1400)
             {
                 if (rpm_speed > 2000)
@@ -556,6 +662,7 @@ void AL_Algorithm_CW(void)
                     Driver_SetThrottle(40);
                 }
             }
+            */
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 4800)
             {
                 DState = T1;
@@ -564,6 +671,7 @@ void AL_Algorithm_CW(void)
             break;
     }
 }
+
 
 int16_t AL_Regler(void)
 {
@@ -576,6 +684,45 @@ int16_t AL_Regler_left(uint16_t right_dist)
     int16_t sen_diff = right_dist - Driver_GetLeftDist();
     return sen_diff * kp * 2;
 }
+
+int16_t AL_Regler_right(uint16_t left_dist)
+{
+    int16_t sen_diff = Driver_GetRightDist() - left_dist;
+    return sen_diff * kp * 2;
+}
+
+void AL_SetSpeed(int16_t target_speed)
+{
+    int16_t error = target_speed - rpm_speed;
+    int16_t throttle;
+
+    if (error < -500)
+    {
+
+        throttle = -10; // -50;
+    }
+    else
+    {
+        float error_integral = error * 0.0167;
+        motor_throttle_integral = motor_throttle_integral + error_integral;
+
+        throttle = error * 0.2 + motor_throttle_integral * 0.05;
+
+        if (throttle > 100)
+        {
+            throttle = 70;
+            motor_throttle_integral = motor_throttle_integral - error_integral;
+        }
+        else if (throttle < 30)
+        {
+            throttle = 30;
+            motor_throttle_integral = motor_throttle_integral - error_integral;
+        }
+    }
+
+    Driver_SetThrottle(throttle);
+}
+
 
 void AL_Recovery(void)
 {
