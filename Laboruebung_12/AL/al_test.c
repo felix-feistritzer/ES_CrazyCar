@@ -20,14 +20,10 @@ extern int16_t sen_diff_delta;
 extern const float kp;
 extern const float kd;
 
-extern const uint8_t time_delta_inv;
-
-//uint8_t text[8];
-//float throttle_integral;
+int16_t throttle_integral;
 
 void AL_Algorithm_Test(void)
 {
-    /*
     distance = ticks_cnt * 5; // Distance in mm
 
     sen_diff_old = sen_diff;
@@ -41,77 +37,94 @@ void AL_Algorithm_Test(void)
             ticks_cnt = 0;
             throttle_integral = 0;
             DState_Test = START_T;
-            Driver_LCD_WriteString("[Thrt]", 6, 0);
-            Driver_LCD_WriteString("[mm/s]", 7, 0);
             break;
         case START_T:
+            Driver_SetSteering(AL_Regler_Test());
             if (Driver_GetFrontDist() < 1400)
             {
-                AL_SetSpeed(1000);
+                AL_SetSpeed_Test(1000);
             }
             else
             {
                 AL_SetSpeed(3000);
             }
 
-            Driver_SetSteering(AL_Regler());
-
-            Driver_LCD_IntToASCII(text, rpm_speed);
-            Driver_LCD_WriteText(text, 4, 7, 102);
-            Driver_LCD_DrawBar(rpm_speed, 5000, 60, 7, 36);
-
             if (Driver_GetFrontDist() < 100)
             {
                 DState_Test = STOP_T;
                 ticks_cnt = 0;
             }
-
+            break;
         case STOP_T:
             Driver_SetThrottle(0);
             break;
     }
-    */
 }
 
-/*
-void AL_SetSpeed(int16_t target_speed)
+int16_t AL_Regler_Test(void)
 {
-    int16_t error = target_speed - rpm_speed;
-    int16_t throttle;
+    const int16_t kp_test = 3277; // 0.1 * 32767
+    const int16_t kd_test = 328;  // 0.01 * 32767
+    const int16_t td_inv = 60;
 
-    if (error < -500)
+    int32_t result;
+    int32_t result_p;
+    int32_t result_d;
+
+    result_p = (int32_t)sen_diff * kp_test;
+
+    result_d = (int32_t)sen_diff_delta * td_inv;
+    result_d = (int32_t)result_d * kd_test;
+
+    result = result_p + result_d;
+    result = result >> 15;
+
+    return (int16_t)result;
+}
+
+void AL_SetSpeed_Test(int16_t target_speed)
+{
+    const int16_t dt = 546;  // (1 / 60) * 32767
+    const int16_t throttle_kp = 6553; // 0.2 * 32767
+    const int16_t throttle_ki = 1638; // 0.05 * 32767
+
+    int32_t throttle;
+    int32_t throttle_p;
+    int32_t throttle_i;
+    int16_t speed_diff;
+    int32_t speed_diff_i;
+
+    speed_diff = target_speed - rpm_speed;
+
+    if (speed_diff < -500)
     {
-        throttle = -50;
+        throttle = -10;
     }
     else
     {
-        float error_integral = error * 0.0167;
-        throttle_integral = throttle_integral + error_integral;
+        throttle_p = (int32_t)speed_diff * throttle_kp;
 
-        throttle = error * 0.2 + throttle_integral * 0.02;// 0.05;
+        speed_diff_i = (int32_t)speed_diff * dt;
+        speed_diff_i = speed_diff_i >> 15;
+
+        throttle_integral = throttle_integral + speed_diff_i;
+
+        throttle_i = (int32_t)throttle_integral * throttle_ki;
+
+        throttle = throttle_p + throttle_i;
+        throttle = throttle >> 15;
 
         if (throttle > 100)
         {
             throttle = 70;
-            throttle_integral = throttle_integral - error_integral;
+            throttle_integral = throttle_integral - speed_diff_i;
         }
         else if (throttle < 30)
         {
             throttle = 30;
-            throttle_integral = throttle_integral - error_integral;
+            throttle_integral = throttle_integral - speed_diff_i;
         }
     }
 
-    Driver_SetThrottle(throttle);
-
-    Driver_LCD_IntToASCII(text, throttle);
-    Driver_LCD_WriteText(text, 4, 6, 102);
-    Driver_LCD_DrawBar(throttle, 100, 60, 6, 36);
-
-}
-*/
-
-void AL_Break(int16_t target_speed)
-{
-
+    Driver_SetThrottle((int16_t)throttle);
 }
