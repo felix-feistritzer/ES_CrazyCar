@@ -17,9 +17,6 @@ extern int16_t sen_diff_old;
 extern int16_t sen_diff;
 extern int16_t sen_diff_delta;
 
-extern const float kp;
-extern const float kd;
-
 int16_t throttle_integral;
 
 void AL_Algorithm_Test(void)
@@ -39,19 +36,28 @@ void AL_Algorithm_Test(void)
             DState_Test = START_T;
             break;
         case START_T:
-            Driver_SetSteering(AL_Regler_Test());
+            Driver_SetSteering(AL_Regler_right_Test(350));
             if (Driver_GetFrontDist() < 1400)
             {
-                AL_SetSpeed_Test(1000);
+                AL_SetSpeed_Test(800);
             }
             else
             {
-                AL_SetSpeed(3000);
+                AL_SetSpeed(2000);
             }
 
-            if (Driver_GetFrontDist() < 100)
+            if (Driver_GetFrontDist() < 400)
             {
-                DState_Test = STOP_T;
+                DState_Test = LEFT_T;
+                ticks_cnt = 0;
+            }
+            break;
+        case LEFT_T:
+            Driver_SetSteering(-100);
+            AL_SetSpeed_Test(1000);
+            if (Driver_GetFrontDist() > 1400)
+            {
+                DState_Test = START_T;
                 ticks_cnt = 0;
             }
             break;
@@ -61,20 +67,26 @@ void AL_Algorithm_Test(void)
     }
 }
 
-int16_t AL_Regler_Test(void)
+
+//#### Steering P-Regler (only Right Wall) ####
+int16_t AL_Regler_right_Test(uint16_t left_dist)
 {
-    const int16_t kp_test = 3277; // 0.1 * 32767
-    const int16_t kd_test = 328;  // 0.01 * 32767
-    const int16_t td_inv = 60;
+    const int16_t kp = 6553; // 0.1 * 2 * 32767
+    const int16_t kd = 328;  // 0.01 * 32767
+    const uint8_t dt_inv = 60;
 
     int32_t result;
     int32_t result_p;
     int32_t result_d;
 
-    result_p = (int32_t)sen_diff * kp_test;
+    int16_t sen_diff;
 
-    result_d = (int32_t)sen_diff_delta * td_inv;
-    result_d = (int32_t)result_d * kd_test;
+    sen_diff = Driver_GetRightDist() - left_dist;
+
+    result_p = (int32_t)sen_diff * kp;
+
+    result_d = (int32_t)sen_diff_delta * dt_inv;
+    result_d = (int32_t)result_d * kd;
 
     result = result_p + result_d;
     result = result >> 15;
@@ -82,9 +94,11 @@ int16_t AL_Regler_Test(void)
     return (int16_t)result;
 }
 
+
+//#### Throttle PI-Regler ####
 void AL_SetSpeed_Test(int16_t target_speed)
 {
-    const int16_t dt = 546;  // (1 / 60) * 32767
+    const int16_t dt = 546;           // (1 / 60) * 32767
     const int16_t throttle_kp = 6553; // 0.2 * 32767
     const int16_t throttle_ki = 1638; // 0.05 * 32767
 
