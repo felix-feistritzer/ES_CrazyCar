@@ -27,7 +27,13 @@ typedef enum DriveState
     T7,
     S8,
     T8,
-    S1
+    S1,
+    BACKUP,
+    BACKUP_LEFT,
+    BACKUP_RIGHT,
+    BACKUP_S1,
+    WRONG_DIR_CW,
+    WRONG_DIR_CCW
 } DriveState_t;
 
 void AL_Algorithm_CCW(void);

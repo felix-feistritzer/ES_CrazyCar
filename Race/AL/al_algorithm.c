@@ -30,6 +30,8 @@ uint8_t stuck_cnt;
 uint8_t recovery;
 uint16_t recovery_distance;
 uint16_t stuck_ticks;
+uint8_t recovery_cnt;
+uint16_t recovery_time;
 
 //###############################
 //# Algorithm CCW
@@ -52,6 +54,8 @@ void AL_Algorithm_CCW(void)
         stuck_cnt = 0;
         recovery = 0;
         recovery_distance = 0;
+        recovery_cnt = 0;
+        recovery_time = 0;
     }
 
     if (Driver_GetFrontDist() < 100 || Driver_GetLeftDist() < 50 || Driver_GetRightDist() < 50 || rpm_speed < 100)
@@ -68,24 +72,39 @@ void AL_Algorithm_CCW(void)
         recovery = 1;
         stuck_ticks = ticks_cnt;
         stuck_cnt = 0;
+        recovery_cnt++;
     }
 
     if (recovery == 1)
     {
         recovery_distance = (ticks_cnt - stuck_ticks) * 5;
-        if (recovery_distance < 300)
+        if (recovery_distance < 250 && recovery_time < 120)
         {
             Driver_SetThrottle(-40);
             Driver_SetSteering(0);
+
+            recovery_time++;
 
             return;
         }
         else
         {
             recovery_distance = 0;
+            recovery_time = 0;
             recovery = 0;
             ticks_cnt = ticks_cnt - stuck_ticks;
+            stuck_cnt = 0;
+
+            if (recovery_cnt > 3)
+            {
+                DState = BACKUP;
+            }
         }
+    }
+
+    if (distance > 6000)
+    {
+        DState = BACKUP;
     }
 
     //#
@@ -132,7 +151,7 @@ void AL_Algorithm_CCW(void)
             }
             else
             {
-                AL_SetSpeed(2000);
+                AL_SetSpeed(1800);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
@@ -157,7 +176,7 @@ void AL_Algorithm_CCW(void)
             }
             else
             {
-                AL_SetSpeed(2000);
+                AL_SetSpeed(1800);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && distance > 1600)
@@ -316,6 +335,83 @@ void AL_Algorithm_CCW(void)
                 ticks_cnt = 0;
             }
             break;
+        case BACKUP:
+            Driver_SetSteering(AL_Regler_right(350));
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(800);
+            }
+            else
+            {
+                AL_SetSpeed(1300);
+            }
+            if (Driver_GetRightDist() > 750)
+            {
+                ticks_cnt = 0;
+            }
+            if (distance > 3000)
+            {
+                DState = BACKUP_S1;
+                recovery_cnt = 0;
+            }
+            else if (Driver_GetFrontDist() < 450)
+            {
+                DState = BACKUP_LEFT;
+                ticks_cnt = 0;
+            }
+            break;
+        case BACKUP_LEFT:
+            Driver_SetSteering(-100);
+            AL_SetSpeed(800);
+            if (Driver_GetFrontDist() > 1400)
+            {
+                DState = BACKUP;
+                ticks_cnt = 0;
+            }
+            break;
+        case BACKUP_S1:
+            Driver_SetSteering(AL_Regler_right(350));
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(800);
+            }
+            else
+            {
+                AL_SetSpeed(1300);
+            }
+            if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000)
+            {
+                DState = T1;
+                ticks_cnt = 0;
+            }
+            if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000)
+            {
+                DState = WRONG_DIR_CCW;
+                ticks_cnt = 0;
+            }
+            break;
+        case WRONG_DIR_CCW:
+            if (distance < 400)
+            {
+                Driver_SetSteering(100);
+                Driver_SetThrottle(40);
+            }
+            else if (distance < 800)
+            {
+                Driver_SetSteering(-100);
+                Driver_SetThrottle(-40);
+            }
+            else if (distance < 1000)
+            {
+                Driver_SetSteering(AL_Regler_right(350));
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                DState = S1;
+                ticks_cnt = 0;
+            }
+            break;
     }
     //#
     //#### CCW Algorithm End ####
@@ -342,6 +438,8 @@ void AL_Algorithm_CW(void)
         stuck_cnt = 0;
         recovery = 0;
         recovery_distance = 0;
+        recovery_cnt = 0;
+        recovery_time = 0;
     }
 
     if (Driver_GetFrontDist() < 100 || Driver_GetLeftDist() < 50 || Driver_GetRightDist() < 50 || rpm_speed < 100)
@@ -358,25 +456,41 @@ void AL_Algorithm_CW(void)
         recovery = 1;
         stuck_ticks = ticks_cnt;
         stuck_cnt = 0;
+        recovery_cnt++;
     }
 
     if (recovery == 1)
     {
         recovery_distance = (ticks_cnt - stuck_ticks) * 5;
-        if (recovery_distance < 300)
+        if (recovery_distance < 250 && recovery_time < 120)
         {
             Driver_SetThrottle(-40);
             Driver_SetSteering(0);
+
+            recovery_time++;
 
             return;
         }
         else
         {
             recovery_distance = 0;
+            recovery_time = 0;
             recovery = 0;
             ticks_cnt = ticks_cnt - stuck_ticks;
+            stuck_cnt = 0;
+
+            if (recovery_cnt > 3)
+            {
+                DState = BACKUP;
+            }
         }
     }
+
+    if (distance > 6000)
+    {
+        DState = BACKUP;
+    }
+
     //#
     //#### Recovery Algorithm End ####
 
@@ -606,6 +720,83 @@ void AL_Algorithm_CW(void)
                 ticks_cnt = 0;
             }
             break;
+        case BACKUP:
+            Driver_SetSteering(AL_Regler_left(350));
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(800);
+            }
+            else
+            {
+                AL_SetSpeed(1300);
+            }
+            if (Driver_GetLeftDist() > 750)
+            {
+                ticks_cnt = 0;
+            }
+            if (distance > 3000)
+            {
+                DState = BACKUP_S1;
+                recovery_cnt = 0;
+            }
+            else if (Driver_GetFrontDist() < 450)
+            {
+                DState = BACKUP_RIGHT;
+                ticks_cnt = 0;
+            }
+            break;
+        case BACKUP_RIGHT:
+            Driver_SetSteering(100);
+            AL_SetSpeed(800);
+            if (Driver_GetFrontDist() > 1400)
+            {
+                DState = BACKUP;
+                ticks_cnt = 0;
+            }
+            break;
+        case BACKUP_S1:
+            Driver_SetSteering(AL_Regler_left(350));
+            if (Driver_GetFrontDist() < 1400)
+            {
+                AL_SetSpeed(800);
+            }
+            else
+            {
+                AL_SetSpeed(1300);
+            }
+            if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000)
+            {
+                DState = T1;
+                ticks_cnt = 0;
+            }
+            if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000)
+            {
+                DState = WRONG_DIR_CW;
+                ticks_cnt = 0;
+            }
+            break;
+        case WRONG_DIR_CW:
+            if (distance < 400)
+            {
+                Driver_SetSteering(-100);
+                Driver_SetThrottle(40);
+            }
+            else if (distance < 800)
+            {
+                Driver_SetSteering(100);
+                Driver_SetThrottle(-40);
+            }
+            else if (distance < 1000)
+            {
+                Driver_SetSteering(AL_Regler_left(350));
+                AL_SetSpeed(1000);
+            }
+            else
+            {
+                DState = S1;
+                ticks_cnt = 0;
+            }
+            break;
     }
     //#
     //#### CW Algorithm End ####
@@ -637,36 +828,56 @@ int16_t AL_Regler(void)
     return (int16_t)result;
 }
 
-//#### Steering P-Regler (only Left Wall) ####
+//#### Steering PD-Regler (only Left Wall) ####
 int16_t AL_Regler_left(uint16_t right_dist)
 {
     const int16_t kp = 6553; // 0.1 * 2 * 32767
+    const int16_t kd = 328;  // 0.01 * 32767
+    const uint8_t dt_inv = 60;
 
+    int32_t result;
     int32_t result_p;
+    int32_t result_d;
+
     int16_t sen_diff;
 
     sen_diff = right_dist - Driver_GetLeftDist();
 
     result_p = (int32_t)sen_diff * kp;
-    result_p = result_p >> 15;
 
-    return (int16_t)result_p;
+    result_d = (int32_t)sen_diff_delta * dt_inv;
+    result_d = (int32_t)result_d * kd;
+
+    result = result_p + result_d;
+    result = result >> 15;
+
+    return (int16_t)result;
 }
 
-//#### Steering P-Regler (only Right Wall) ####
+//#### Steering PD-Regler (only Right Wall) ####
 int16_t AL_Regler_right(uint16_t left_dist)
 {
     const int16_t kp = 6553; // 0.1 * 2 * 32767
+    const int16_t kd = 328;  // 0.01 * 32767
+    const uint8_t dt_inv = 60;
 
+    int32_t result;
     int32_t result_p;
+    int32_t result_d;
+
     int16_t sen_diff;
 
     sen_diff = Driver_GetRightDist() - left_dist;
 
     result_p = (int32_t)sen_diff * kp;
-    result_p = result_p >> 15;
 
-    return result_p;
+    result_d = (int32_t)sen_diff_delta * dt_inv;
+    result_d = (int32_t)result_d * kd;
+
+    result = result_p + result_d;
+    result = result >> 15;
+
+    return (int16_t)result;
 }
 
 //#### Throttle PI-Regler ####
@@ -704,7 +915,7 @@ void AL_SetSpeed(int16_t target_speed)
 
         if (throttle > 100)
         {
-            throttle = 70;
+            throttle = DState == START ? 80 : 70;
             throttle_integral = throttle_integral - speed_diff_i;
         }
         else if (throttle < 30)
