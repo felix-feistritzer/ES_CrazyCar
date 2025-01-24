@@ -95,7 +95,7 @@ void AL_Algorithm_CCW(void)
             ticks_cnt = ticks_cnt - stuck_ticks;
             stuck_cnt = 0;
 
-            if (recovery_cnt > 3)
+            if (recovery_cnt > 2)
             {
                 DState = BACKUP;
             }
@@ -479,9 +479,10 @@ void AL_Algorithm_CW(void)
             ticks_cnt = ticks_cnt - stuck_ticks;
             stuck_cnt = 0;
 
-            if (recovery_cnt > 3)
+            if (recovery_cnt > 2)
             {
                 DState = BACKUP;
+                ticks_cnt = 0;
             }
         }
     }
@@ -728,18 +729,18 @@ void AL_Algorithm_CW(void)
             }
             else
             {
-                AL_SetSpeed(1300);
+                AL_SetSpeed(1000);
             }
             if (Driver_GetLeftDist() > 750)
             {
                 ticks_cnt = 0;
             }
-            if (distance > 3000)
+            if (distance > 4000)
             {
                 DState = BACKUP_S1;
                 recovery_cnt = 0;
             }
-            else if (Driver_GetFrontDist() < 450)
+            else if (Driver_GetFrontDist() < 400)
             {
                 DState = BACKUP_RIGHT;
                 ticks_cnt = 0;
@@ -748,7 +749,7 @@ void AL_Algorithm_CW(void)
         case BACKUP_RIGHT:
             Driver_SetSteering(100);
             AL_SetSpeed(800);
-            if (Driver_GetFrontDist() > 1400)
+            if (Driver_GetFrontDist() > 1000)
             {
                 DState = BACKUP;
                 ticks_cnt = 0;
@@ -781,12 +782,12 @@ void AL_Algorithm_CW(void)
                 Driver_SetSteering(-100);
                 Driver_SetThrottle(40);
             }
-            else if (distance < 800)
+            else if (distance < 900)
             {
                 Driver_SetSteering(100);
                 Driver_SetThrottle(-40);
             }
-            else if (distance < 1000)
+            else if (distance < 1100)
             {
                 Driver_SetSteering(AL_Regler_left(350));
                 AL_SetSpeed(1000);
