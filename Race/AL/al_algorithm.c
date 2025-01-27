@@ -162,7 +162,7 @@ void AL_Algorithm_CCW(void)
             break;
         case T2:
             AL_SetSpeed(1300);
-            Driver_SetSteering(-70);
+            Driver_SetSteering(-50);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
                 DState = S3;
@@ -176,7 +176,7 @@ void AL_Algorithm_CCW(void)
             }
             else
             {
-                AL_SetSpeed(1800);
+                AL_SetSpeed(1700);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && distance > 1600)
@@ -279,7 +279,7 @@ void AL_Algorithm_CCW(void)
                 AL_SetSpeed(1500);
             }
             Driver_SetSteering(AL_Regler_right(350));
-            if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 800 && distance > 500)
+            if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1400 && distance > 350)
             {
                 DState = T7;
                 ticks_cnt = 0;
@@ -326,7 +326,7 @@ void AL_Algorithm_CCW(void)
             }
             else
             {
-                AL_SetSpeed(4000);
+                AL_SetSpeed(4500);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 4800)
@@ -672,7 +672,7 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T7:
-            Driver_SetSteering(100);
+            Driver_SetSteering(60);
             AL_SetSpeed(1300);
             if (Driver_GetRightDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
@@ -697,7 +697,7 @@ void AL_Algorithm_CW(void)
             }
             break;
         case T8:
-            Driver_SetSteering(100);
+            Driver_SetSteering(60);
             AL_SetSpeed(1300);
             if (Driver_GetLeftDist() < 750 && Driver_GetFrontDist() > 1000 && distance > 150)
             {
@@ -722,7 +722,7 @@ void AL_Algorithm_CW(void)
             }
             break;
         case BACKUP:
-            Driver_SetSteering(AL_Regler_left(350));
+            Driver_SetSteering(AL_Regler_left(250));
             if (Driver_GetFrontDist() < 1400)
             {
                 AL_SetSpeed(800);
@@ -740,7 +740,7 @@ void AL_Algorithm_CW(void)
                 DState = BACKUP_S1;
                 recovery_cnt = 0;
             }
-            else if (Driver_GetFrontDist() < 400)
+            else if (Driver_GetFrontDist() < 370)
             {
                 DState = BACKUP_RIGHT;
                 ticks_cnt = 0;
