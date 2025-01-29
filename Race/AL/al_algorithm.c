@@ -326,7 +326,7 @@ void AL_Algorithm_CCW(void)
             }
             else
             {
-                AL_SetSpeed(2800);
+                AL_SetSpeed(2700);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 4800)
@@ -713,7 +713,7 @@ void AL_Algorithm_CW(void)
             }
             else
             {
-                AL_SetSpeed(3000);
+                AL_SetSpeed(2600); // 2700
             }
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 4800)
             {
@@ -918,8 +918,8 @@ void AL_SetSpeed(int16_t target_speed)
         {
             //throttle = DState == START ? 100 : 70;
             if (DState == START) throttle = 100;
-            else if (DState == S1 && distance > 1000) throttle = 90;
-            else throttle = 72; // 70
+            else if (DState == S1 && distance > 1000) throttle = 80; // 85
+            else throttle = 70; // 75
             throttle_integral = throttle_integral - speed_diff_i;
         }
         else if (throttle < 30)
