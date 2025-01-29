@@ -19,6 +19,9 @@ extern int16_t sen_diff_delta;
 
 int16_t throttle_integral;
 
+uint8_t map_ccw = 0xE7; // 11100111 | Left = 1 | Right = 0
+uint8_t turn_memory = 0;
+
 void AL_Algorithm_Test(void)
 {
     distance = ticks_cnt * 5; // Distance in mm
@@ -43,10 +46,10 @@ void AL_Algorithm_Test(void)
             }
             else
             {
-                AL_SetSpeed(2000);
+                AL_SetSpeed(1500);
             }
 
-            if (Driver_GetFrontDist() < 400)
+            if (Driver_GetFrontDist() < 370)
             {
                 DState_Test = LEFT_T;
                 ticks_cnt = 0;
@@ -68,7 +71,7 @@ void AL_Algorithm_Test(void)
 }
 
 
-//#### Steering P-Regler (only Right Wall) ####
+//#### Steering PD-Regler (only Right Wall) ####
 int16_t AL_Regler_right_Test(uint16_t left_dist)
 {
     const int16_t kp = 6553; // 0.1 * 2 * 32767

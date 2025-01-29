@@ -127,7 +127,7 @@ void AL_Algorithm_CCW(void)
             }
             else
             {
-                AL_SetSpeed(4000);
+                AL_SetSpeed(2800);
             }
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
             {
@@ -326,7 +326,7 @@ void AL_Algorithm_CCW(void)
             }
             else
             {
-                AL_SetSpeed(4500);
+                AL_SetSpeed(2800);
             }
             Driver_SetSteering(AL_Regler());
             if (Driver_GetLeftDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 4800)
@@ -354,7 +354,7 @@ void AL_Algorithm_CCW(void)
                 DState = BACKUP_S1;
                 recovery_cnt = 0;
             }
-            else if (Driver_GetFrontDist() < 450)
+            else if (Driver_GetFrontDist() < 400) //370)
             {
                 DState = BACKUP_LEFT;
                 ticks_cnt = 0;
@@ -513,7 +513,7 @@ void AL_Algorithm_CW(void)
             }
             else
             {
-                AL_SetSpeed(4000);
+                AL_SetSpeed(3000);
             }
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 1000)
             {
@@ -713,7 +713,7 @@ void AL_Algorithm_CW(void)
             }
             else
             {
-                AL_SetSpeed(4000);
+                AL_SetSpeed(3000);
             }
             if (Driver_GetRightDist() > 750 && Driver_GetFrontDist() < 1000 && distance > 4800)
             {
@@ -722,14 +722,14 @@ void AL_Algorithm_CW(void)
             }
             break;
         case BACKUP:
-            Driver_SetSteering(AL_Regler_left(250));
+            Driver_SetSteering(AL_Regler_left(350)); //250));
             if (Driver_GetFrontDist() < 1400)
             {
                 AL_SetSpeed(800);
             }
             else
             {
-                AL_SetSpeed(1000);
+                AL_SetSpeed(1500);
             }
             if (Driver_GetLeftDist() > 750)
             {
@@ -916,7 +916,10 @@ void AL_SetSpeed(int16_t target_speed)
 
         if (throttle > 100)
         {
-            throttle = DState == START ? 80 : 70;
+            //throttle = DState == START ? 100 : 70;
+            if (DState == START) throttle = 100;
+            else if (DState == S1 && distance > 1000) throttle = 90;
+            else throttle = 72; // 70
             throttle_integral = throttle_integral - speed_diff_i;
         }
         else if (throttle < 30)
